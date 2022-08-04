@@ -46,7 +46,8 @@
     "prompt": "^1.1.0",
     "shx": "^0.3.3",
     "ts-node": "^10.0.0",
-    "typechain": "^8.0.0"
+    "typechain": "^8.0.0",
+    "typescript": "^4.3.2"
   },
   "dependencies": {
     "ethers": "^5.6.8"

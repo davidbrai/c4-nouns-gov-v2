@@ -37,7 +37,7 @@ forge test -vvv --ffi
 
 The focus of this audit is on:
 
-- The [NounsDAOLogicV2](https://github.com/nounsDAO/nouns-monorepo/blob/verbs-nip-1-save-proposal-creation-block/packages/nouns-contracts/contracts/governance/NounsDAOLogicV2.sol)` contract, which introduces two new features:
+- The [NounsDAOLogicV2](https://github.com/nounsDAO/nouns-monorepo/blob/verbs-nip-1-save-proposal-creation-block/packages/nouns-contracts/contracts/governance/NounsDAOLogicV2.sol) contract, which introduces two new features:
   - Dynamic quorum ([spec](https://github.com/nounsDAO/nouns-tech/tree/main/dynamic-quorum))
   - Voting gas refund ([spec](https://github.com/nounsDAO/nouns-tech/tree/main/vote-refund))
   - A fix to how `votingDelay` is used ([bug report](https://github.com/nounsDAO/nouns-diligence/blob/main/reports/proposal-58.md#major))

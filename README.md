@@ -1,77 +1,69 @@
-# @nouns/contracts
+# Contest details
 
-## Background
+TBD
 
-Nouns are an experimental attempt to improve the formation of on-chain avatar communities. While projects such as CryptoPunks have attempted to bootstrap digital community and identity, Nouns attempt to bootstrap identity, community, governance and a treasury that can be used by the community for the creation of long-term value.
+# About Nouns DAO
 
-One Noun is generated and auctioned every day, forever. All Noun artwork is stored and rendered on-chain. See more information at [nouns.wtf](https://nouns.wtf/).
+![](https://i.imgur.com/ZTZrWxw.png)
 
-## Contracts
+[Nouns](https://nouns.wtf) is a generative NFT project on Ethereum, where a new Noun is minted and auctioned off every day, all proceeds go to the DAO treasury, and each token represents one vote. To date more than 350 Nouns have been sold on auction, and the DAO has funded a variety of cool builders, including a recent 500 ETH grant to [theprotocolguild.eth](https://nouns.wtf/vote/108).
 
-| Contract                                                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Address                                                                                                               |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| [NounsToken](./contracts/NounsToken.sol)                        | This is the Nouns ERC721 Token contract. Unlike other Nouns contracts, it cannot be replaced or upgraded. Beyond the responsibilities of a standard ERC721 token, it is used to lock and replace periphery contracts, store checkpointing data required by our Governance contracts, and control Noun minting/burning. This contract contains two main roles - `minter` and `owner`. The `minter` will be set to the Nouns Auction House in the constructor and ownership will be transferred to the Nouns DAO following deployment.                                                                                                    | [0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03](https://etherscan.io/address/0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03) |
-| [NounsSeeder](./contracts/NounsSeeder.sol)                      | This contract is used to determine Noun traits during the minting process. It can be replaced to allow for future trait generation algorithm upgrades. Additionally, it can be locked by the Nouns DAO to prevent any future updates. Currently, Noun traits are determined using pseudo-random number generation: `keccak256(abi.encodePacked(blockhash(block.number - 1), nounId))`. Trait generation is not truly random. Traits can be predicted when minting a Noun on the pending block.                                                                                                                                          | [0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515](https://etherscan.io/address/0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515) |
-| [NounsDescriptor](./contracts/NounsDescriptor.sol)              | This contract is used to store/render Noun artwork and build token URIs. Noun 'parts' are compressed in the following format before being stored in their respective byte arrays: `Palette Index, Bounds [Top (Y), Right (X), Bottom (Y), Left (X)] (4 Bytes), [Pixel Length (1 Byte), Color Index (1 Byte)][]`. When `tokenURI` is called, Noun parts are read from storage and converted into a series of SVG rects to build an SVG image on-chain. Once the entire SVG has been generated, it is base64 encoded. The token URI consists of base64 encoded data URI with the JSON contents directly inlined, including the SVG image. | [0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63](https://etherscan.io/address/0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63) |
-| [NounsAuctionHouse](./contracts/NounsAuctionHouse.sol)          | This contract acts as a self-sufficient noun generation and distribution mechanism, auctioning one noun every 24 hours, forever. 100% of auction proceeds (ETH) are automatically deposited in the Nouns DAO treasury, where they are governed by noun owners. Each time an auction is settled, the settlement transaction will also cause a new noun to be minted and a new 24 hour auction to begin. While settlement is most heavily incentivized for the winning bidder, it can be triggered by anyone, allowing the system to trustlessly auction nouns as long as Ethereum is operational and there are interested bidders.       | [0xF15a943787014461d94da08aD4040f79Cd7c124e](https://etherscan.io/address/0xF15a943787014461d94da08aD4040f79Cd7c124e) |
-| [NounsDAOExecutor](./contracts/governance/NounsDAOExecutor.sol) | This contract is a fork of Compound's `Timelock`. It acts as a timelocked treasury for the Nouns DAO. This contract is controlled by the governance contract (`NounsDAOProxy`).                                                                                                                                                                                                                                                                                                                                                                                                                                                         | [0x0BC3807Ec262cB779b38D65b38158acC3bfedE10](https://etherscan.io/address/0x0BC3807Ec262cB779b38D65b38158acC3bfedE10) |
-| [NounsDAOProxy](./contracts/governance/NounsDAOProxy.sol)       | This contract is a fork of Compound's `GovernorBravoDelegator`. It can be used to create, vote on, and execute governance proposals.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | [0x6f3E6272A167e8AcCb32072d08E0957F9c79223d](https://etherscan.io/address/0x6f3E6272A167e8AcCb32072d08E0957F9c79223d) |
-| [NounsDAOLogicV1](./contracts/governance/NounsDAOLogicV1.sol)   | This contract is a fork of Compound's `GovernorBravoDelegate`. It's the logic contract used by the `NounsDAOProxy`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | [0xa43aFE317985726E4e194eb061Af77fbCb43F944](https://etherscan.io/address/0xa43aFE317985726E4e194eb061Af77fbCb43F944) |
+More intro information can be found on [Nouns Center](https://nouns.center/).
 
-## Development
+# Developer guide
 
-### Install dependencies
+## Setup
 
 ```sh
 yarn
 ```
 
-### Compile typescript, contracts, and generate typechain wrappers
+## Running tests
 
-```sh
-yarn build
-```
-
-### Run tests
+### Hardhat tests
 
 ```sh
 yarn test
 ```
 
-### Install forge dependencies
+### Forge tests
 
 ```sh
 forge install
+forge test -vvv --ffi
 ```
 
-### Run forge tests
+# Audit scope
 
-```sh
-forge test -vvv
-```
+The focus of this audit is on:
 
-### Environment Setup
+- The [NounsDAOLogicV2](https://github.com/nounsDAO/nouns-monorepo/blob/verbs-nip-1-save-proposal-creation-block/packages/nouns-contracts/contracts/governance/NounsDAOLogicV2.sol)` contract, which introduces two new features:
+  - Dynamic quorum ([spec](https://github.com/nounsDAO/nouns-tech/tree/main/dynamic-quorum))
+  - Voting gas refund ([spec](https://github.com/nounsDAO/nouns-tech/tree/main/vote-refund))
+  - A fix to how `votingDelay` is used ([bug report](https://github.com/nounsDAO/nouns-diligence/blob/main/reports/proposal-58.md#major))
+- Parent contracts which hold state variables: `NounsDAOStorageV2`, `NounsDAOStorageV1Adjusted`, `NounsDAOProxyStorage`
+- The upgrade process from v1 to v2
+  - The upgrade will take place via a proposal; the proposal will include the following transactions:
+    - call `_setImplementation` on the DAO proxy with the address of the V2 logic contract
+    - call `_setDynamicQuorumParams` on the DAO proxy to set up dynamic quorum with parameters the DAO decided on
+  - Proposals that were created on V1 and will remain active post-upgrade, should behave the same (e.g. maintain their quorum setting)
+  - More generally, should ensure that there are no hidden storage issues when migrating from V1 → V2
 
-Copy `.env.example` to `.env` and fill in fields
+Key risks we’d like you to explore:
 
-### Commands
+- Bricking the DAO: this upgrade should not result in a non-functional DAO that cannot execute any additional proposals.
+- Security: this upgrade should not introduce any new cost-effective attack vectors.
 
-```sh
-# Compile Solidity
-yarn build:sol
+# How to get context
 
-# Command Help
-yarn task:[task-name] --help
+- A basic understanding of [Compound’s Governor Bravo](https://compound.finance/docs/governance) is very useful, since Nouns DAO V1 is an NFT-adapted fork of it
+- Read [NounsDAOLogicV1](https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/governance/NounsDAOLogicV1.sol), since V2 is a diff from that; most importantly read [the docs articulating the modifications](https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/governance/NounsDAOLogicV1.sol#L27) from Compound’s contract
+- Get acquainted with [NounsToken](https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/NounsToken.sol), and specifically the [ERC721Checkpointable](https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/base/ERC721Checkpointable.sol) features
+- For full context on how Nouns works (beyond the in-scope contracts), read the [Nouns Protocol wiki](https://www.notion.so/32e4f0bf74fe433e927e2ea35e52a507) that covers the auction house and on-chain art contracts
+- Nice-to-have: read Dialectic’s two great posts on a Nouns governance attack on the treasury: [1](https://dialectic.ch/editorial/nouns-governance-attack), [2](https://dialectic.ch/editorial/nouns-governance-attack-2)
 
-# Deploy & Configure for Local Development (Hardhat)
-yarn task:run-local
+At this point you should have sufficient context to dive into V2:
 
-# Deploy & Configure (Testnet/Mainnet)
-# This task deploys and verifies the contracts, populates the descriptor, and transfers contract ownership.
-# For parameter and flag information, run `yarn task:deploy-and-configure --help`.
-yarn task:deploy-and-configure --network [network] --update-configs
-```
-
-### Automated Testnet Deployments
-
-The contracts are deployed to Rinkeby on each push to master and each PR using the account `0x387d301d92AE0a87fD450975e8Aef66b72fBD718`. This account's mnemonic is stored in GitHub Actions as a secret and is injected as the environment variable `MNEMONIC`. This mnemonic _shouldn't be considered safe for mainnet use_.
+- Read [the docs on V2’s modifications](https://github.com/nounsDAO/nouns-monorepo/blob/verbs-nip-1-save-proposal-creation-block/packages/nouns-contracts/contracts/governance/NounsDAOLogicV2.sol#L30)
+- Read the diff between [`NounsDAOLogicV2`](https://github.com/nounsDAO/nouns-monorepo/blob/verbs-nip-1-save-proposal-creation-block/packages/nouns-contracts/contracts/governance/NounsDAOLogicV2.sol) and [`NounsDAOLogicV1`](https://github.com/nounsDAO/nouns-monorepo/blob/verbs-nip-1-save-proposal-creation-block/packages/nouns-contracts/contracts/governance/NounsDAOLogicV1.sol)
+- Read the [e2e test](https://github.com/nounsDAO/nouns-monorepo/blob/verbs-nip-1-save-proposal-creation-block/packages/nouns-contracts/test/governance/NounsDAO/V2/end2end.test.ts#L255) that demos the upgrade to V2
